@@ -4,6 +4,7 @@ import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.dto.ApiResponse;
 import com.example.chatmessages.dto.request.RoomRequest;
 import com.example.chatmessages.dto.response.RoomResponse;
+import com.example.chatmessages.service.RoomMemberService;
 import com.example.chatmessages.service.RoomService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.List;
 public class RoomController {
 
     RoomService roomService;
+    RoomMemberService roomMemberService;
 
     @PostMapping
     public ApiResponse<RoomResponse> createRoom(@RequestBody RoomRequest roomRequest) {
@@ -49,9 +51,9 @@ public class RoomController {
         return new ApiResponse<>(HttpStatus.OK.value(), "Room updated successfully", updatedRoom);
     }
 
-    @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteRoom(@PathVariable Integer id) {
-        roomService.deleteRoom(id);
-        return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "Room deleted successfully", null);
+    @DeleteMapping("/rooms/{roomId}/members/{userId}")
+    public ApiResponse<Void> removeMember(@PathVariable Integer roomId, @PathVariable Integer userId) {
+        roomMemberService.removeMember(userId, roomId);
+        return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "Room member removed successfully", null);
     }
 }

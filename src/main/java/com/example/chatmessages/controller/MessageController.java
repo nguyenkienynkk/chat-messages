@@ -36,6 +36,11 @@ public class MessageController {
 
         return new ApiResponse<>(HttpStatus.OK.value(), "Messages retrieved successfully", response);
     }
+    @GetMapping("/room/{roomId}")
+    public ApiResponse<List<MessageResponse>> getMessagesByRoomId(@PathVariable Integer roomId) {
+        List<MessageResponse> messages = messageService.getMessagesByRoomId(roomId);
+        return new ApiResponse<>(HttpStatus.OK.value(), "Messages retrieved successfully", messages);
+    }
 
 
     @GetMapping("/{id}")

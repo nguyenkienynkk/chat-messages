@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface RoomMemberRepository extends JpaRepository<RoomMember, RoomMemberId> {
     Optional<RoomMember> findByUserIdAndRoomId(Integer userId, Integer roomId);
+    void deleteAllByRoomId(Integer roomId);
 }

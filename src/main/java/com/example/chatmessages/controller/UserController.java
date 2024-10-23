@@ -2,10 +2,10 @@ package com.example.chatmessages.controller;
 
 import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.dto.ApiResponse;
-import com.example.chatmessages.dto.request.LoginRequestDTO;
+import com.example.chatmessages.dto.request.LoginRequest;
 import com.example.chatmessages.dto.request.UserFullRequest;
-import com.example.chatmessages.dto.request.UserRequestDTO;
-import com.example.chatmessages.dto.response.UserResponseDTO;
+import com.example.chatmessages.dto.request.UserRequest;
+import com.example.chatmessages.dto.response.UserResponse;
 import com.example.chatmessages.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,48 +23,50 @@ public class UserController {
 
     UserService userService;
 
-    // Tạo mới người dùng
     @PostMapping
-    public ApiResponse<UserResponseDTO> createUser(@RequestBody UserRequestDTO userRequestDTO) {
-        UserResponseDTO createdUser = userService.createUser(userRequestDTO);
+    public ApiResponse<UserResponse> createUser(@RequestBody UserRequest userRequest) {
+        UserResponse createdUser = userService.createUser(userRequest);
         return new ApiResponse<>(HttpStatus.CREATED.value(), "User created successfully", createdUser);
     }
 
-    // Lấy tất cả người dùng
     @GetMapping
-    public ApiResponse<PageResponse<List<UserResponseDTO>>> getAllUsers(
+    public ApiResponse<PageResponse<List<UserResponse>>> getAllUsers(
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
 
-        PageResponse<List<UserResponseDTO>> response = userService.getAllUsers(pageNo, pageSize);
+        PageResponse<List<UserResponse>> response = userService.getAllUsers(pageNo, pageSize);
         return new ApiResponse<>(HttpStatus.OK.value(), "Users retrieved successfully", response);
     }
 
-
-    // Lấy thông tin người dùng theo ID
-    @GetMapping("/{id}")
-    public ApiResponse<UserResponseDTO> getUserById(@PathVariable Integer id) {
-        UserResponseDTO userResponseDTO = userService.getUserById(id);
-        return new ApiResponse<>(HttpStatus.OK.value(), "User retrieved successfully", userResponseDTO);
+    @GetMapping("/search")
+    public ApiResponse<List<UserResponse>> searchUsers(
+            @RequestParam(value = "username") String username) {
+        List<UserResponse> users = userService.searchUsersByUsername(username);
+        return new ApiResponse<>(HttpStatus.OK.value(), "Users retrieved successfully", users);
     }
 
-    // Cập nhật người dùng
+
+    @GetMapping("/{id}")
+    public ApiResponse<UserResponse> getUserById(@PathVariable Integer id) {
+        UserResponse userResponse = userService.getUserById(id);
+        return new ApiResponse<>(HttpStatus.OK.value(), "User retrieved successfully", userResponse);
+    }
+
     @PutMapping("/{id}")
-    public ApiResponse<UserResponseDTO> updateUser(@PathVariable Integer id,
-                                                   @RequestBody UserFullRequest userRequestDTO) {
-        UserResponseDTO updatedUser = userService.updateUser(id, userRequestDTO);
+    public ApiResponse<UserResponse> updateUser(@PathVariable Integer id,
+                                                @RequestBody UserFullRequest userRequestDTO) {
+        UserResponse updatedUser = userService.updateUser(id, userRequestDTO);
         return new ApiResponse<>(HttpStatus.OK.value(), "User updated successfully", updatedUser);
     }
 
-    // Xoá người dùng
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
         return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "User deleted successfully", null);
     }
     @PostMapping("/login")
-    public ApiResponse<UserResponseDTO> login(@RequestBody LoginRequestDTO loginRequest) {
-        UserResponseDTO user = userService.login(loginRequest);
+    public ApiResponse<UserResponse> login(@RequestBody LoginRequest loginRequest) {
+        UserResponse user = userService.login(loginRequest);
         return new ApiResponse<>(HttpStatus.OK.value(), "Login successful", user);
     }
 }

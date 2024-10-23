@@ -10,10 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserRequestDTO {
-    @NotBlank(message = "Username is required")
-    String username;
-
+public class LoginRequest {
     @Email(message = "Email must be valid")
     @NotBlank(message = "Email is required")
     String email;

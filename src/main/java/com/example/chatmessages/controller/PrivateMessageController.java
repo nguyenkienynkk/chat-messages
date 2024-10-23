@@ -36,7 +36,13 @@ public class PrivateMessageController {
         PageResponse<List<PrivateMessageResponse>> response = privateMessageService.getAllPrivateMessages(pageNo, pageSize);
         return new ApiResponse<>(HttpStatus.OK.value(), "Private messages retrieved successfully", response);
     }
-
+    @GetMapping("/between/{senderId}/{receiverId}")
+    public ApiResponse<List<PrivateMessageResponse>> getMessagesBetween(
+            @PathVariable Integer senderId,
+            @PathVariable Integer receiverId) {
+        List<PrivateMessageResponse> messages = privateMessageService.getMessagesBySenderAndReceiver(senderId, receiverId);
+        return new ApiResponse<>(HttpStatus.OK.value(), "Messages retrieved successfully", messages);
+    }
     // Lấy tin nhắn riêng tư theo ID
     @GetMapping("/{id}")
     public ApiResponse<PrivateMessageResponse> getPrivateMessageById(@PathVariable Integer id) {

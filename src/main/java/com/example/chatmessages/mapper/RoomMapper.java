@@ -1,7 +1,7 @@
 package com.example.chatmessages.mapper;
 
 import com.example.chatmessages.dto.request.RoomRequest;
-import com.example.chatmessages.dto.request.UserRequestDTO;
+import com.example.chatmessages.dto.request.UserRequest;
 import com.example.chatmessages.dto.response.RoomResponse;
 import com.example.chatmessages.entity.Room;
 import com.example.chatmessages.entity.User;
@@ -32,5 +32,5 @@ public interface RoomMapper {
     }
 
     // User entity mapping
-    User toEntity(UserRequestDTO userRequestDTO);
+    User toEntity(UserRequest userRequest);
 }

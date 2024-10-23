@@ -10,7 +10,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserResponseDTO {
+public class UserResponse {
     Integer id;
     String username;
     String email;

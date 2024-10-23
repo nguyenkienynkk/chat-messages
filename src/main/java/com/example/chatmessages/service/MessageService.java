@@ -1,15 +1,21 @@
 package com.example.chatmessages.service;
 
+import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.dto.request.MessageRequest;
 import com.example.chatmessages.dto.response.MessageResponse;
 import com.example.chatmessages.entity.Message;
 import com.example.chatmessages.entity.Room;
 import com.example.chatmessages.entity.User;
+import com.example.chatmessages.enums.SortType;
 import com.example.chatmessages.mapper.MessageMapper;
 import com.example.chatmessages.repository.MessageRepository;
 import com.example.chatmessages.repository.RoomRepository;
 import com.example.chatmessages.repository.UserRepository;
+import com.example.chatmessages.utils.PageUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -25,34 +31,38 @@ public class MessageService {
     private final UserRepository userRepository;
 
     public MessageResponse createMessage(MessageRequest messageRequest) {
-        // Tìm kiếm room và sender từ cơ sở dữ liệu
         Room room = roomRepository.findById(messageRequest.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Room not found"));
 
         User sender = userRepository.findById(messageRequest.getSenderId())
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
 
-        // Tạo đối tượng Message từ yêu cầu
         Message message = messageMapper.toEntity(messageRequest);
 
-        // Thiết lập các thuộc tính
         message.setRoom(room);
         message.setSender(sender);
-        message.setSentAt(Instant.now()); // Thiết lập thời gian gửi
+        message.setSentAt(Instant.now());
 
-        // Lưu tin nhắn
         Message savedMessage = messageRepository.save(message);
 
-        // Trả về phản hồi
         return messageMapper.toResponseDTO(savedMessage);
     }
 
+    public PageResponse<List<MessageResponse>> getAllMessages(int pageNo, int pageSize) {
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "sentAt", SortType.DESC.getValue());
+        Page<Message> messagePage = messageRepository.findAll(pageable);
 
-    public List<MessageResponse> getAllMessages() {
-        return messageRepository.findAll().stream()
-                .map(messageMapper::toResponseDTO)
+        List<MessageResponse> responseList = messagePage.getContent().stream().map(messageMapper::toResponseDTO)
                 .toList();
+
+        return PageResponse.<List<MessageResponse>>builder()
+                .page(messagePage.getNumber())
+                .size(messagePage.getSize())
+                .totalPage(messagePage.getTotalPages())
+                .items(responseList)
+                .build();
     }
+
 
     public MessageResponse getMessageById(Integer id) {
         return messageRepository.findById(id)

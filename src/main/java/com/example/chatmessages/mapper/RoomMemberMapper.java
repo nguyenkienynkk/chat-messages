@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface RoomMemberMapper {
+
     RoomMember toEntity(RoomMemberRequest request);
 
     @Mapping(source = "user.id", target = "userId")

@@ -1,5 +1,6 @@
 package com.example.chatmessages.controller;
 
+import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.dto.ApiResponse;
 import com.example.chatmessages.dto.request.LoginRequestDTO;
 import com.example.chatmessages.dto.request.UserFullRequest;
@@ -31,10 +32,14 @@ public class UserController {
 
     // Lấy tất cả người dùng
     @GetMapping
-    public ApiResponse<List<UserResponseDTO>> getAllUsers() {
-        List<UserResponseDTO> users = userService.getAllUsers();
-        return new ApiResponse<>(HttpStatus.OK.value(), "Users retrieved successfully", users);
+    public ApiResponse<PageResponse<List<UserResponseDTO>>> getAllUsers(
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
+
+        PageResponse<List<UserResponseDTO>> response = userService.getAllUsers(pageNo, pageSize);
+        return new ApiResponse<>(HttpStatus.OK.value(), "Users retrieved successfully", response);
     }
+
 
     // Lấy thông tin người dùng theo ID
     @GetMapping("/{id}")

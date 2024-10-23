@@ -1,5 +1,6 @@
 package com.example.chatmessages.controller;
 
+import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.dto.ApiResponse;
 import com.example.chatmessages.dto.request.MessageRequest;
 import com.example.chatmessages.dto.response.MessageResponse;
@@ -27,10 +28,15 @@ public class MessageController {
     }
 
     @GetMapping
-    public ApiResponse<List<MessageResponse>> getAllMessages() {
-        List<MessageResponse> messages = messageService.getAllMessages();
-        return new ApiResponse<>(HttpStatus.OK.value(), "Messages retrieved successfully", messages);
+    public ApiResponse<PageResponse<List<MessageResponse>>> getAllMessages(
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
+
+        PageResponse<List<MessageResponse>> response = messageService.getAllMessages(pageNo, pageSize);
+
+        return new ApiResponse<>(HttpStatus.OK.value(), "Messages retrieved successfully", response);
     }
+
 
     @GetMapping("/{id}")
     public ApiResponse<MessageResponse> getMessageById(@PathVariable Integer id) {

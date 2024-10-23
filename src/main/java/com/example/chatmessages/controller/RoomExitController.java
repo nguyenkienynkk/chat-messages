@@ -1,5 +1,6 @@
 package com.example.chatmessages.controller;
 
+import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.dto.ApiResponse;
 import com.example.chatmessages.dto.request.RoomExitRequest;
 import com.example.chatmessages.dto.response.RoomExitResponse;
@@ -27,10 +28,14 @@ public class RoomExitController {
 
     // Lấy tất cả RoomExit
     @GetMapping
-    public ApiResponse<List<RoomExitResponse>> getAllExits() {
-        List<RoomExitResponse> exits = roomExitService.getAllExits();
-        return new ApiResponse<>(HttpStatus.OK.value(), "Exits retrieved successfully", exits);
+    public ApiResponse<PageResponse<List<RoomExitResponse>>> getAllExits(
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
+
+        PageResponse<List<RoomExitResponse>> response = roomExitService.getAllExits(pageNo, pageSize);
+        return new ApiResponse<>(HttpStatus.OK.value(), "Exits retrieved successfully", response);
     }
+
 
     // Lấy thông tin RoomExit theo ID
     @GetMapping("/{userId}/{roomId}") // Change path to accept composite key

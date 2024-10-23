@@ -1,16 +1,31 @@
 package com.example.chatmessages.dto.request;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
+
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserFullRequest {
-    private String username;
-    private String email;
-    private String password;
-    private String avatar;
-    private String status;
-    private Instant createdAt;
+    @NotBlank(message = "Username is required")
+    String username;
+
+    @Email(message = "Email must be valid")
+    @NotBlank(message = "Email is required")
+    String email;
+
+    @NotBlank(message = "Password is required")
+    String password;
+
+    String avatar;
+
+    String status;
+
+    Instant createdAt;
 }

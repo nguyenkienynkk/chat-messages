@@ -1,5 +1,6 @@
 package com.example.chatmessages.controller;
 
+import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.dto.ApiResponse;
 import com.example.chatmessages.dto.request.RoomRequest;
 import com.example.chatmessages.dto.response.RoomResponse;
@@ -27,10 +28,14 @@ public class RoomController {
     }
 
     @GetMapping
-    public ApiResponse<List<RoomResponse>> getAllRooms() {
-        List<RoomResponse> rooms = roomService.getAllRooms();
-        return new ApiResponse<>(HttpStatus.OK.value(), "Rooms retrieved successfully", rooms);
+    public ApiResponse<PageResponse<List<RoomResponse>>> getAllRooms(
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
+
+        PageResponse<List<RoomResponse>> response = roomService.getAllRooms(pageNo, pageSize);
+        return new ApiResponse<>(HttpStatus.OK.value(), "Rooms retrieved successfully", response);
     }
+
 
     @GetMapping("/{id}")
     public ApiResponse<RoomResponse> getRoomById(@PathVariable Integer id) {

@@ -25,7 +25,6 @@ public class RoomExitId implements Serializable {
     private static final long serialVersionUID = -3514404017326676744L;
     @NotNull
     @Column(name = "user_id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 
     @NotNull

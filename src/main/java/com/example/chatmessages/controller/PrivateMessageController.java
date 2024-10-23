@@ -1,5 +1,6 @@
 package com.example.chatmessages.controller;
 
+import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.dto.ApiResponse;
 import com.example.chatmessages.dto.request.PrivateMessageRequest;
 import com.example.chatmessages.dto.response.PrivateMessageResponse;
@@ -28,9 +29,12 @@ public class PrivateMessageController {
 
     // Lấy tất cả tin nhắn riêng tư
     @GetMapping
-    public ApiResponse<List<PrivateMessageResponse>> getAllPrivateMessages() {
-        List<PrivateMessageResponse> messages = privateMessageService.getAllPrivateMessages();
-        return new ApiResponse<>(HttpStatus.OK.value(), "Private messages retrieved successfully", messages);
+    public ApiResponse<PageResponse<List<PrivateMessageResponse>>> getAllPrivateMessages(
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
+
+        PageResponse<List<PrivateMessageResponse>> response = privateMessageService.getAllPrivateMessages(pageNo, pageSize);
+        return new ApiResponse<>(HttpStatus.OK.value(), "Private messages retrieved successfully", response);
     }
 
     // Lấy tin nhắn riêng tư theo ID

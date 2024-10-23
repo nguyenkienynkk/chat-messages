@@ -1,5 +1,7 @@
 package com.example.chatmessages.controller;
 
+import com.example.chatmessages.common.PageResponse;
+import com.example.chatmessages.dto.ApiResponse;
 import com.example.chatmessages.dto.request.RoomMemberRequest;
 import com.example.chatmessages.dto.response.RoomMemberResponse;
 import com.example.chatmessages.service.RoomMemberService;
@@ -22,11 +24,13 @@ public class RoomMemberController {
         RoomMemberResponse response = roomMemberService.addMember(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
     @GetMapping
-    public ResponseEntity<List<RoomMemberResponse>> getAllMembers() {
-        List<RoomMemberResponse> members = roomMemberService.getAllMembers();
-        return ResponseEntity.ok(members);
+    public ApiResponse<PageResponse<List<RoomMemberResponse>>> getAllMembers(
+            @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
+
+        PageResponse<List<RoomMemberResponse>> response = roomMemberService.getAllMembers(pageNo, pageSize);
+        return new ApiResponse<>(HttpStatus.OK.value(), "Members retrieved successfully", response);
     }
 
     @GetMapping("/{userId}/{roomId}")

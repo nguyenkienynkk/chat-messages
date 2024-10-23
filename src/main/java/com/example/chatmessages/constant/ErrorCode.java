@@ -19,7 +19,9 @@ public enum ErrorCode {
     INVALID_PASSWORD("Password must be at least 6 characters", HttpStatus.BAD_REQUEST),
     USER_NOT_EXISTED("User not existed", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED("Unauthenticated", HttpStatus.UNAUTHORIZED),
+    Invalid_CREDENTIALS("Invalid credentials", HttpStatus.FORBIDDEN),
     USER_EXISTED("User existed", HttpStatus.BAD_REQUEST),
+    USER_NOT_FOUND("User not found", HttpStatus.NOT_FOUND),
     FORBIDDEN("You do not have permission", HttpStatus.FORBIDDEN),
 
     // Product-related errors
@@ -30,11 +32,23 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS("Email already exists.", HttpStatus.BAD_REQUEST),
     CUSTOMER_ROLE_NOT_FOUND("Customer role not found", HttpStatus.NOT_FOUND),
     CUSTOMER_NOT_FOUND("Customer not found", HttpStatus.NOT_FOUND),
-    CUSTOMER_PASSWORD_NOT_FOUND("Customer password not found",HttpStatus.NOT_FOUND),
+    CUSTOMER_PASSWORD_NOT_FOUND("Customer password not found", HttpStatus.NOT_FOUND),
     PHONE_NUMBER_ALREADY_EXISTS("Phone number already exists", HttpStatus.BAD_REQUEST),
     //System errors
     SYSTEM_ROLE_COULD_NOT_BE_DELETED("System role could not be deleted", HttpStatus.BAD_REQUEST),
 
+    // Room errors
+    ROOM_NOT_FOUND("Room not found", HttpStatus.NOT_FOUND),
+    ROOM_ALREADY_EXISTS("Room already exists", HttpStatus.BAD_REQUEST),
+    ROOM_NAME_ALREADY_EXISTS("Room with this name already exists", HttpStatus.BAD_REQUEST),
+    ROOM_NOT_ACTIVE("Room is not active", HttpStatus.FORBIDDEN),
+    ROOM_WITH_THIS_NAME_ALREADY_EXISTS("Room with this name already exists", HttpStatus.BAD_REQUEST),
+    //Room exit errors
+    ROOM_EXIT_NOT_FOUND("RoomExit not found",HttpStatus.NOT_FOUND),
+    //Sender errors
+    SENDER_NOT_FOUND("Sender not found", HttpStatus.NOT_FOUND),
+    RECEIVE_NOT_FOUND("Receive not found", HttpStatus.NOT_FOUND),
+    PRIVATE_MESSAGE_NOT_FOUND("Private message not found", HttpStatus.NOT_FOUND),
     //Address errors
     ADDRESS_NOT_FOUND("Address not found", HttpStatus.NOT_FOUND),
 
@@ -83,6 +97,7 @@ public enum ErrorCode {
             "Product specification attribute mapping does not exist",
             HttpStatus.NOT_FOUND
     ),
+    ROOM_MEMBER_NOT_FOUND("Role member not found", HttpStatus.NOT_FOUND),
     //Product video mapping
     PRODUCT_VIDEO_MAPPING_NOT_FOUND("Product video mapping not found", HttpStatus.NOT_FOUND),
     PRODUCT_VIDEO_MAPPING_NOT_EXISTS("Product video mapping not exists", HttpStatus.BAD_REQUEST),

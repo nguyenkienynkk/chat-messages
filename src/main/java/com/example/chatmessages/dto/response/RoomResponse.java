@@ -1,17 +1,20 @@
 package com.example.chatmessages.dto.response;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
 
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoomResponse {
-    private Integer id;
-    private String name;
-    private String description;
-    private Boolean isPrivate;
-    private Integer createdBy;
-    private Instant createdAt;
+    Integer id;
+    String name;
+    String description;
+    Boolean isPrivate;
+    Integer createdBy;
+    Instant createdAt;
 }

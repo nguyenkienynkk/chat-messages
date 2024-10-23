@@ -4,10 +4,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/chat_message
     username: postgres
     password: 12345678
-
   mvc:
     log-request-details: true
-
+  jpa:
+    hibernate:
+      ddl-auto: update
 logging:
   level:
     web: DEBUG

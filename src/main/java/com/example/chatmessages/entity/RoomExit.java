@@ -1,14 +1,6 @@
 package com.example.chatmessages.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,9 +36,16 @@ public class RoomExit {
 
     @Column(name = "exited_at")
     private Instant exitedAt;
+
+    @Column(name = "updated_at")
+    private Instant updatedAt;
     @PrePersist
     protected void onCreate() {
         this.exitedAt = Instant.now();
+        this.updatedAt = Instant.now();
     }
-
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = Instant.now();
+    }
 }

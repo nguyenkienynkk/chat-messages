@@ -1,18 +1,21 @@
 package com.example.chatmessages.dto.response;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
 
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PrivateMessageResponse {
-    private Integer id;
-    private String message;
-    private String messageType;
-    private String attachment;
-    private Instant sentAt;
-    private Integer senderId;
-    private Integer receiverId;
+    Integer id;
+    String message;
+    String messageType;
+    String attachment;
+    Instant sentAt;
+    Integer senderId;
+    Integer receiverId;
 }

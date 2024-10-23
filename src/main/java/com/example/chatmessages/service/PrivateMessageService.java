@@ -13,7 +13,7 @@ public interface PrivateMessageService {
 
     PrivateMessageResponse getPrivateMessageById(Integer id);
 
-    List<PrivateMessageResponse> getMessagesBySenderAndReceiver(Integer senderId, Integer receiverId);
+    PageResponse<List<PrivateMessageResponse>> getMessagesBySenderAndReceiver(Integer senderId, Integer receiverId, int pageNo, int pageSize);
 
     PrivateMessageResponse updatePrivateMessage(Integer id, PrivateMessageRequest requestDTO);
 

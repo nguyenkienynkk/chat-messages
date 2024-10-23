@@ -16,9 +16,11 @@ import com.example.chatmessages.utils.PageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +53,7 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
 
         List<PrivateMessageResponse> responseList = messagePage.getContent().stream()
                 .map(privateMessageMapper::toResponseDTO)
-                .toList();
+                .collect(Collectors.toList());
 
         return PageResponse.<List<PrivateMessageResponse>>builder()
                 .page(messagePage.getNumber())
@@ -67,15 +69,33 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
                 .map(privateMessageMapper::toResponseDTO)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.PRIVATE_MESSAGE_NOT_FOUND.getMessage()));
     }
-    @Override
-    public List<PrivateMessageResponse> getMessagesBySenderAndReceiver(Integer senderId, Integer receiverId) {
-        // Lấy tất cả tin nhắn giữa hai người dùng, bất kể thứ tự
-        List<PrivateMessage> messages = privateMessageRepository.findBySenderIdAndReceiverId(senderId, receiverId);
 
-        return messages.stream()
+    @Override
+    public PageResponse<List<PrivateMessageResponse>> getMessagesBySenderAndReceiver(Integer senderId, Integer receiverId, int pageNo, int pageSize) {
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "sentAt", Sort.Direction.ASC.name());
+
+        // Lấy tin nhắn từ sender đến receiver
+        Page<PrivateMessage> messagesFromSender = privateMessageRepository.findBySenderIdAndReceiverId(senderId, receiverId, pageable);
+        // Lấy tin nhắn từ receiver đến sender
+        Page<PrivateMessage> messagesFromReceiver = privateMessageRepository.findBySenderIdAndReceiverId(receiverId, senderId, pageable);
+
+        // Kết hợp các tin nhắn lại
+        List<PrivateMessageResponse> combinedMessages = messagesFromSender.getContent().stream()
                 .map(privateMessageMapper::toResponseDTO)
-                .toList();
+                .collect(Collectors.toList());
+
+        combinedMessages.addAll(messagesFromReceiver.getContent().stream()
+                .map(privateMessageMapper::toResponseDTO)
+                .toList());
+
+        return PageResponse.<List<PrivateMessageResponse>>builder()
+                .page(pageNo)
+                .size(pageSize)
+                .totalPage((int) Math.ceil((double) (messagesFromSender.getTotalElements() + messagesFromReceiver.getTotalElements()) / pageSize))
+                .items(combinedMessages)
+                .build();
     }
+
     @Override
     public PrivateMessageResponse updatePrivateMessage(Integer id, PrivateMessageRequest requestDTO) {
         return privateMessageRepository.findById(id).map(privateMessage -> {

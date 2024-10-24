@@ -89,7 +89,7 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
 
         Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "sentAt", Sort.Direction.DESC.name());
 
-        Page<PrivateMessage> messages = privateMessageRepository.findMessagesdd Between(senderId, receiverId, pageable);
+        Page<PrivateMessage> messages = privateMessageRepository.findMessagesBetween(senderId, receiverId, pageable);
 
         List<MessageSenderAndReceiveResponse> messageResponses = messages.getContent().stream()
                 .map(privateMessageMapper::toSenderAndReceive)

@@ -20,9 +20,6 @@ public class UserFullRequest {
     @NotBlank(message = "Email is required")
     String email;
 
-    @NotBlank(message = "Password is required")
-    String password;
-
     String avatar;
 
     String status;

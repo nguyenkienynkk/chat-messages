@@ -51,14 +51,11 @@ public class UserServiceImpl implements UserService {
 
         if (existingUserOptional.isPresent()) {
             User existingUser = existingUserOptional.get();
-
             if (requestDTO.getEmail() != null && !requestDTO.getEmail().equals(existingUser.getEmail())) {
                 if (userRepository.existsByEmailAndIdNot(requestDTO.getEmail(), id))
                     throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
             }
             userMapper.updateUserFromDTO(requestDTO, existingUser);
-            if (requestDTO.getPassword() != null && !requestDTO.getPassword().isEmpty())
-                existingUser.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
             existingUser = userRepository.save(existingUser);
             return userMapper.toResponseDTO(existingUser);
         }

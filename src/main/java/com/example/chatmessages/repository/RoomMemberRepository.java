@@ -15,5 +15,6 @@ public interface RoomMemberRepository extends JpaRepository<RoomMember, RoomMemb
     void deleteAllByRoomId(Integer roomId);
     @Query("SELECT rm.room FROM RoomMember rm WHERE rm.user.id = :userId")
     List<Room> findRoomsByUserId(@Param("userId") Integer userId);
+    List<RoomMember> findByRoomId(Integer roomId);
 
 }

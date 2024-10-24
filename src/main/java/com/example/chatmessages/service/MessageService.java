@@ -16,5 +16,5 @@ public interface MessageService {
     MessageResponse updateMessage(Integer id, MessageRequest messageRequest);
 
     void deleteMessage(Integer id);
-    List<MessageResponse> getMessagesByRoomId(Integer roomId);
+    PageResponse<List<MessageResponse>> getMessagesByRoomId(Integer roomId, int pageNo, int pageSize);
 }

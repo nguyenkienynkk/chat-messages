@@ -42,9 +42,12 @@ public class RoomMember {
     private Instant updatedAt;
     @PrePersist
     protected void onCreate() {
-        this.joinedAt = Instant.now();
+        if (this.joinedAt == null)
+            this.joinedAt = Instant.now();
+
         this.updatedAt = Instant.now();
     }
+
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = Instant.now();

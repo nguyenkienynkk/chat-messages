@@ -5,7 +5,10 @@ import com.example.chatmessages.constant.ErrorCode;
 import com.example.chatmessages.dto.request.RoomMemberRequest;
 import com.example.chatmessages.dto.response.RoomMemberResponse;
 import com.example.chatmessages.entity.RoomMember;
+import com.example.chatmessages.entity.RoomMemberId;
+import com.example.chatmessages.entity.User;
 import com.example.chatmessages.enums.SortType;
+import com.example.chatmessages.exception.AlreadyExistsException;
 import com.example.chatmessages.exception.AppException;
 import com.example.chatmessages.exception.NotFoundException;
 import com.example.chatmessages.mapper.RoomMemberMapper;
@@ -21,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -35,12 +39,23 @@ public class RoomMemberServiceImpl implements RoomMemberService {
 
     @Override
     public RoomMemberResponse addMember(RoomMemberRequest request) {
-        RoomMember roomMember = roomMemberMapper.toEntity(request);
+        RoomMemberId roomMemberId = RoomMemberId.builder()
+                .userId(request.getUserId())
+                .roomId(request.getRoomId())
+                .build();
+
+        if (roomMemberRepository.existsById(roomMemberId))
+            throw new AlreadyExistsException("User is already a member of this room.");
+
+        RoomMember roomMember = new RoomMember();
+        roomMember.setId(roomMemberId);
+        roomMember.setRole(request.getRole());
 
         roomMember.setUser(userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_EXISTED.getMessage())));
         roomMember.setRoom(roomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ROOM_NOT_FOUND.getMessage())));
+        roomMember.setJoinedAt(Instant.now());
 
         RoomMember savedRoomMember = roomMemberRepository.save(roomMember);
         return roomMemberMapper.toResponseDTO(savedRoomMember);
@@ -86,5 +101,17 @@ public class RoomMemberServiceImpl implements RoomMemberService {
         RoomMember roomMember = roomMemberRepository.findByUserIdAndRoomId(userId, roomId)
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_MEMBER_NOT_FOUND));
         roomMemberRepository.delete(roomMember);
+    }
+    public List<User> getUsersByRoomId(Integer roomId) {
+        // Tìm tất cả RoomMembers theo roomId
+        List<RoomMember> roomMembers = roomMemberRepository.findByRoomId(roomId);
+        if (roomMembers.isEmpty()) {
+            throw new NotFoundException(ErrorCode.ROOM_MEMBER_NOT_FOUND.getMessage());
+        }
+
+        // Trả về danh sách người dùng
+        return roomMembers.stream()
+                .map(RoomMember::getUser)
+                .toList();
     }
 }

@@ -31,7 +31,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class RoomServiceImpl implements RoomService { // Implementing the interface
+public class RoomServiceImpl implements RoomService {
 
     RoomRepository roomRepository;
     RoomMapper roomMapper;
@@ -99,11 +99,8 @@ public class RoomServiceImpl implements RoomService { // Implementing the interf
     @Override
     @Transactional
     public void deleteRoom(Integer id) {
-        // Xóa tất cả thành viên của phòng
         roomMemberRepository.deleteAllByRoomId(id);
-        // Xóa tất cả tin nhắn liên quan của phòng
         messageRepository.deleteAllByRoomId(id);
-        // Xóa phòng
         roomRepository.deleteById(id);
     }
 }

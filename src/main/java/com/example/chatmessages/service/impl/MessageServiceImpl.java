@@ -15,7 +15,9 @@ import com.example.chatmessages.repository.RoomRepository;
 import com.example.chatmessages.repository.UserRepository;
 import com.example.chatmessages.service.MessageService;
 import com.example.chatmessages.utils.PageUtils;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,12 +27,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class MessageServiceImpl implements MessageService {
 
-    private final MessageRepository messageRepository;
-    private final MessageMapper messageMapper;
-    private final RoomRepository roomRepository;
-    private final UserRepository userRepository;
+    MessageRepository messageRepository;
+    MessageMapper messageMapper;
+    RoomRepository roomRepository;
+    UserRepository userRepository;
 
     @Override
     public MessageResponse createMessage(MessageRequest messageRequest) {
@@ -52,12 +55,22 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<MessageResponse> getMessagesByRoomId(Integer roomId) {
-        List<Message> messages = messageRepository.findByRoomId(roomId);
-        return messages.stream()
+    public PageResponse<List<MessageResponse>> getMessagesByRoomId(Integer roomId, int pageNo, int pageSize) {
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "sentAt", SortType.DESC.getValue());
+        Page<Message> messagePage = messageRepository.findByRoomId(roomId, pageable);
+
+        List<MessageResponse> responseList = messagePage.getContent().stream()
                 .map(messageMapper::toResponseDTO)
                 .toList();
+
+        return PageResponse.<List<MessageResponse>>builder()
+                .page(messagePage.getNumber())
+                .size(messagePage.getSize())
+                .totalPage(messagePage.getTotalPages())
+                .items(responseList)
+                .build();
     }
+
 
     @Override
     public PageResponse<List<MessageResponse>> getAllMessages(int pageNo, int pageSize) {

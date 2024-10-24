@@ -16,7 +16,9 @@ import com.example.chatmessages.repository.RoomRepository;
 import com.example.chatmessages.repository.UserRepository;
 import com.example.chatmessages.service.RoomExitService;
 import com.example.chatmessages.utils.PageUtils;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,12 +28,13 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class RoomExitServiceImpl implements RoomExitService {
 
-    private final RoomExitRepository roomExitRepository;
-    private final RoomExitMapper roomExitMapper;
-    private final UserRepository userRepository;
-    private final RoomRepository roomRepository;
+    RoomExitRepository roomExitRepository;
+    RoomExitMapper roomExitMapper;
+    UserRepository userRepository;
+    RoomRepository roomRepository;
 
     @Override
     public RoomExitResponse exitRoom(RoomExitRequest request) {

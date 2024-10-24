@@ -1,5 +1,6 @@
 package com.example.chatmessages.dto.request;
 
+import com.example.chatmessages.constant.MessageType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -16,7 +17,7 @@ public class PrivateMessageRequest {
     @NotBlank(message = "Message cannot be blank")
     String message;
 
-    String messageType;
+    MessageType messageType;
 
     String attachment;
 

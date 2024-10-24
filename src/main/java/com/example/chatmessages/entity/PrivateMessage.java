@@ -1,5 +1,6 @@
 package com.example.chatmessages.entity;
 
+import com.example.chatmessages.constant.MessageType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -40,9 +41,9 @@ public class PrivateMessage {
     @Column(name = "message", nullable = false, length = Integer.MAX_VALUE)
     private String message;
 
-    @Size(max = 50)
+    @Enumerated(EnumType.STRING)
     @Column(name = "message_type", length = 50)
-    private String messageType;
+    private MessageType messageType;
 
     @Column(name = "attachment", length = Integer.MAX_VALUE)
     private String attachment;

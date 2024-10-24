@@ -15,6 +15,6 @@ public interface PrivateMessageMapper {
     @Mapping(source = "sender.id", target = "senderId")
     @Mapping(source = "receiver.id", target = "receiverId")
     MessageSenderAndReceiveResponse toSenderAndReceive(PrivateMessage privateMessage);
-
+    @Mapping(source = "messageType", target = "messageType")
     PrivateMessage toEntity(PrivateMessageRequest privateMessageRequest);
 }

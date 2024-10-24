@@ -51,6 +51,7 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
         PrivateMessage privateMessage = privateMessageMapper.toEntity(privateMessageRequest);
         privateMessage.setSender(sender);
         privateMessage.setReceiver(receiver);
+        privateMessage.setMessageType(privateMessageRequest.getMessageType());
 
         PrivateMessage savedMessage = privateMessageRepository.save(privateMessage);
 

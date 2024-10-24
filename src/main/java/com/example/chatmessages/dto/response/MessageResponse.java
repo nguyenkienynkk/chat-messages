@@ -1,5 +1,6 @@
 package com.example.chatmessages.dto.response;
 
+import com.example.chatmessages.constant.MessageType;
 import com.example.chatmessages.entity.Message;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ public class MessageResponse {
     Integer roomId;
     Integer senderId;
     String message;
-    String messageType;
+    MessageType messageType;
     String attachment;
     Instant sentAt;
     public MessageResponse(Message message) {
@@ -28,7 +29,7 @@ public class MessageResponse {
         this.roomId = message.getRoom().getId();
         this.senderId = message.getSender().getId();
         this.message = message.getMessage();
-        this.messageType = message.getMessageType();
+        this.messageType = MessageType.fromString(String.valueOf(message.getMessageType()));
         this.attachment = message.getAttachment();
         this.sentAt = message.getSentAt();
     }

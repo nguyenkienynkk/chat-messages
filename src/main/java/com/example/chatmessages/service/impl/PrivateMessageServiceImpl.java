@@ -26,12 +26,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -87,7 +84,7 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
     public PageResponse<List<MessageSenderAndReceiveResponse>> getMessagesBySenderAndReceiver(
             Integer senderId, Integer receiverId, int pageNo, int pageSize) {
 
-        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "sentAt", Sort.Direction.DESC.name());
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "sentAt", SortType.ASC.getValue());
 
         Page<PrivateMessage> messages = privateMessageRepository.findMessagesBetween(senderId, receiverId, pageable);
 

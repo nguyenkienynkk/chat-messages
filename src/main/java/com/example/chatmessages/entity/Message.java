@@ -1,6 +1,19 @@
 package com.example.chatmessages.entity;
 
-import jakarta.persistence.*;
+import com.example.chatmessages.constant.MessageType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -40,9 +53,9 @@ public class Message {
     @Column(name = "message", nullable = false, length = Integer.MAX_VALUE)
     private String message;
 
-    @Size(max = 50)
+    @Enumerated(EnumType.STRING)
     @Column(name = "message_type", length = 50)
-    private String messageType;
+    private MessageType messageType;
 
     @Column(name = "attachment", length = Integer.MAX_VALUE)
     private String attachment;

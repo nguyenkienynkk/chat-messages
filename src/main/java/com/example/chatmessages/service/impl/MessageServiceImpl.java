@@ -50,11 +50,12 @@ public class MessageServiceImpl implements MessageService {
 
         return messageMapper.toResponseDTO(savedMessage);
     }
+
     @Override
     public List<MessageResponse> getMessagesByRoomId(Integer roomId) {
         List<Message> messages = messageRepository.findByRoomId(roomId);
         return messages.stream()
-                .map(MessageResponse::new)
+                .map(messageMapper::toResponseDTO)
                 .toList();
     }
 
@@ -63,7 +64,8 @@ public class MessageServiceImpl implements MessageService {
         Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "sentAt", SortType.DESC.getValue());
         Page<Message> messagePage = messageRepository.findAll(pageable);
 
-        List<MessageResponse> responseList = messagePage.getContent().stream().map(messageMapper::toResponseDTO)
+        List<MessageResponse> responseList = messagePage.getContent().stream()
+                .map(messageMapper::toResponseDTO)
                 .toList();
 
         return PageResponse.<List<MessageResponse>>builder()
@@ -85,7 +87,7 @@ public class MessageServiceImpl implements MessageService {
     public MessageResponse updateMessage(Integer id, MessageRequest messageRequest) {
         return messageRepository.findById(id).map(message -> {
             message.setMessage(messageRequest.getMessage());
-            message.setMessageType(messageRequest.getMessageType());
+            message.setMessageType(messageRequest.getMessageType()); // Set enum directly
             message.setAttachment(messageRequest.getAttachment());
             return messageMapper.toResponseDTO(messageRepository.save(message));
         }).orElseThrow(() -> new NotFoundException(ErrorCode.MESSAGE_NOT_FOUND.getMessage()));

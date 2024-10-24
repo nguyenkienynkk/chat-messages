@@ -12,5 +12,6 @@ public interface MessageMapper {
 
     @Mapping(source = "room.id", target = "roomId")
     @Mapping(source = "sender.id", target = "senderId")
+    @Mapping(source = "messageType", target = "messageType")
     MessageResponse toResponseDTO(Message message);
 }

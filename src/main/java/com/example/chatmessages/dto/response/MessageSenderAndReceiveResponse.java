@@ -13,6 +13,8 @@ public class MessageSenderAndReceiveResponse {
     Integer id;
     String message;
     Instant sentAt;
+    String messageType;
+    String attachment;
     Integer senderId;
     Integer receiverId;
 }

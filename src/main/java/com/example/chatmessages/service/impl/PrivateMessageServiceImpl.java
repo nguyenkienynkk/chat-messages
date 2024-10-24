@@ -90,26 +90,18 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
             Integer senderId, Integer receiverId, int pageNo, int pageSize) {
 
         Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "sentAt", SortType.DESC.getValue());
-
-        // Lấy danh sách tin nhắn giữa người gửi và người nhận theo phân trang
         Page<PrivateMessage> messages = privateMessageRepository.findMessagesBetween(senderId, receiverId, pageable);
-
-        // Chuyển đổi danh sách tin nhắn từ PrivateMessage sang MessageSenderAndReceiveResponse và đảo ngược thứ tự
         List<MessageSenderAndReceiveResponse> messageResponses = new ArrayList<>();
-
-        // Duyệt từng phần tử trong danh sách tin nhắn, chuyển đổi rồi thêm vào danh sách kết quả theo thứ tự ngược
         messages.getContent().stream()
-                .map(privateMessageMapper::toSenderAndReceive)  // Ánh xạ đối tượng sang dạng mong muốn
-                .collect(Collectors.toCollection(LinkedList::new))  // Chuyển sang LinkedList để dùng descendingIterator()
-                .descendingIterator()  // Tạo iterator để duyệt ngược danh sách
-                .forEachRemaining(messageResponses::add);  // Duyệt ngược và thêm vào danh sách kết quả
-
-        // Trả về kết quả dưới dạng PageResponse
+                .map(privateMessageMapper::toSenderAndReceive)
+                .collect(Collectors.toCollection(LinkedList::new))
+                .descendingIterator()
+                .forEachRemaining(messageResponses::add);
         return PageResponse.<List<MessageSenderAndReceiveResponse>>builder()
-                .page(pageNo)               // Số trang hiện tại
-                .size(pageSize)              // Kích thước của mỗi trang
-                .totalPage(messages.getTotalPages())  // Tổng số trang
-                .items(messageResponses)     // Danh sách tin nhắn đã chuyển đổi và đảo ngược
+                .page(pageNo)
+                .size(pageSize)
+                .totalPage(messages.getTotalPages())
+                .items(messageResponses)
                 .build();
     }
 

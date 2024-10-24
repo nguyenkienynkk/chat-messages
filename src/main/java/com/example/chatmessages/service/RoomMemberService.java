@@ -18,6 +18,6 @@ public interface RoomMemberService {
     RoomMemberResponse updateMember(Integer userId, Integer roomId, RoomMemberRequest request);
 
     void removeMember(Integer userId, Integer roomId);
-    List<User> getUsersByRoomId(Integer roomId);
+    List<User> getMembersByRoomId(Integer roomId);
     RoomMemberResponse addMemberByUsername(String username, Integer roomId, String role);
 }

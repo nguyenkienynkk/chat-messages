@@ -62,6 +62,11 @@ public class RoomMemberServiceImpl implements RoomMemberService {
         return roomMemberMapper.toResponseDTO(savedRoomMember);
     }
     @Override
+    public List<User> getMembersByRoomId(Integer roomId) {
+        return roomMemberRepository.findMembersByRoomId(roomId);
+    }
+
+    @Override
     public RoomMemberResponse addMemberByUsername(String username, Integer roomId, String role) {
         // Tìm user theo username
         User user = userRepository.findByUsername(username)

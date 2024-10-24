@@ -4,6 +4,7 @@ import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.dto.ApiResponse;
 import com.example.chatmessages.dto.request.RoomMemberRequest;
 import com.example.chatmessages.dto.response.RoomMemberResponse;
+import com.example.chatmessages.entity.User;
 import com.example.chatmessages.service.RoomMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,12 @@ public class RoomMemberController {
         RoomMemberResponse response = roomMemberService.addMember(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+    @GetMapping("/{id}/members")
+    public ApiResponse<List<User>> getMembersByRoomId(@PathVariable Integer id) {
+        List<User> members = roomMemberService.getMembersByRoomId(id);
+        return new ApiResponse<>(HttpStatus.OK.value(), "Members retrieved successfully", members);
+    }
+
     @GetMapping
     public ApiResponse<PageResponse<List<RoomMemberResponse>>> getAllMembers(
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,

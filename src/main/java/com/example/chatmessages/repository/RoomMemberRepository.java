@@ -3,6 +3,7 @@ package com.example.chatmessages.repository;
 import com.example.chatmessages.entity.Room;
 import com.example.chatmessages.entity.RoomMember;
 import com.example.chatmessages.entity.RoomMemberId;
+import com.example.chatmessages.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,5 +17,8 @@ public interface RoomMemberRepository extends JpaRepository<RoomMember, RoomMemb
     @Query("SELECT rm.room FROM RoomMember rm WHERE rm.user.id = :userId")
     List<Room> findRoomsByUserId(@Param("userId") Integer userId);
     List<RoomMember> findByRoomId(Integer roomId);
+
+    @Query("SELECT rm.user FROM RoomMember rm WHERE rm.room.id = :roomId")
+    List<User> findMembersByRoomId(@Param("roomId") Integer roomId);
 
 }

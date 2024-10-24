@@ -11,16 +11,12 @@ import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface RoomMapper {
-
-    // Map Room to RoomResponse
     @Mapping(target = "createdBy", source = "createdBy.id")
     RoomResponse toResponseDTO(Room room);
 
-    // Map RoomRequest to Room
     @Mapping(target = "createdBy", source = "createdBy", qualifiedByName = "mapToUser")
     Room toEntity(RoomRequest request);
 
-    // Reverse mapping from Integer to User
     @Named("mapToUser")
     default User mapToUser(Integer id) {
         if (id == null) {
@@ -31,6 +27,5 @@ public interface RoomMapper {
         return user;
     }
 
-    // User entity mapping
     User toEntity(UserRequest userRequest);
 }

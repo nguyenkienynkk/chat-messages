@@ -28,7 +28,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -85,21 +89,30 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
     public PageResponse<List<MessageSenderAndReceiveResponse>> getMessagesBySenderAndReceiver(
             Integer senderId, Integer receiverId, int pageNo, int pageSize) {
 
-        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "sentAt", SortType.ASC.getValue());
+        Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "sentAt", SortType.DESC.getValue());
 
+        // Lấy danh sách tin nhắn giữa người gửi và người nhận theo phân trang
         Page<PrivateMessage> messages = privateMessageRepository.findMessagesBetween(senderId, receiverId, pageable);
 
-        List<MessageSenderAndReceiveResponse> messageResponses = messages.getContent().stream()
-                .map(privateMessageMapper::toSenderAndReceive)
-                .toList();
+        // Chuyển đổi danh sách tin nhắn từ PrivateMessage sang MessageSenderAndReceiveResponse và đảo ngược thứ tự
+        List<MessageSenderAndReceiveResponse> messageResponses = new ArrayList<>();
 
+        // Duyệt từng phần tử trong danh sách tin nhắn, chuyển đổi rồi thêm vào danh sách kết quả theo thứ tự ngược
+        messages.getContent().stream()
+                .map(privateMessageMapper::toSenderAndReceive)  // Ánh xạ đối tượng sang dạng mong muốn
+                .collect(Collectors.toCollection(LinkedList::new))  // Chuyển sang LinkedList để dùng descendingIterator()
+                .descendingIterator()  // Tạo iterator để duyệt ngược danh sách
+                .forEachRemaining(messageResponses::add);  // Duyệt ngược và thêm vào danh sách kết quả
+
+        // Trả về kết quả dưới dạng PageResponse
         return PageResponse.<List<MessageSenderAndReceiveResponse>>builder()
-                .page(pageNo)
-                .size(pageSize)
-                .totalPage(messages.getTotalPages())
-                .items(messageResponses)
+                .page(pageNo)               // Số trang hiện tại
+                .size(pageSize)              // Kích thước của mỗi trang
+                .totalPage(messages.getTotalPages())  // Tổng số trang
+                .items(messageResponses)     // Danh sách tin nhắn đã chuyển đổi và đảo ngược
                 .build();
     }
+
 
     @Override
     public PrivateMessageResponse updatePrivateMessage(Integer id, PrivateMessageRequest requestDTO) {

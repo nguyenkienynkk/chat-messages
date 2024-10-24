@@ -32,6 +32,15 @@ public class RoomMemberController {
         PageResponse<List<RoomMemberResponse>> response = roomMemberService.getAllMembers(pageNo, pageSize);
         return new ApiResponse<>(HttpStatus.OK.value(), "Members retrieved successfully", response);
     }
+    @PostMapping("/add-by-username")
+    public ResponseEntity<RoomMemberResponse> addMemberByUsername(
+            @RequestParam String username,
+            @RequestParam Integer roomId,
+            @RequestParam String role) {
+
+        RoomMemberResponse response = roomMemberService.addMemberByUsername(username, roomId, role);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 
     @GetMapping("/{userId}/{roomId}")
     public ResponseEntity<RoomMemberResponse> getMemberById(@PathVariable Integer userId, @PathVariable Integer roomId) {

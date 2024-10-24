@@ -100,7 +100,7 @@ public class MessageServiceImpl implements MessageService {
     public MessageResponse updateMessage(Integer id, MessageRequest messageRequest) {
         return messageRepository.findById(id).map(message -> {
             message.setMessage(messageRequest.getMessage());
-            message.setMessageType(messageRequest.getMessageType()); // Set enum directly
+            message.setMessageType(messageRequest.getMessageType());
             message.setAttachment(messageRequest.getAttachment());
             return messageMapper.toResponseDTO(messageRepository.save(message));
         }).orElseThrow(() -> new NotFoundException(ErrorCode.MESSAGE_NOT_FOUND.getMessage()));

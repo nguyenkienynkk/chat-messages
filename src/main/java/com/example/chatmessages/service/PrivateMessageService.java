@@ -2,6 +2,7 @@ package com.example.chatmessages.service;
 
 import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.dto.request.PrivateMessageRequest;
+import com.example.chatmessages.dto.response.ChatPartnerResponse;
 import com.example.chatmessages.dto.response.PrivateMessageResponse;
 import com.example.chatmessages.dto.response.UserResponse;
 
@@ -20,5 +21,5 @@ public interface PrivateMessageService {
 
     void deletePrivateMessage(Integer id);
 
-    List<UserResponse> getChatPartners(Integer userId);
+    ChatPartnerResponse getChatPartnersAndRooms(Integer userId);
 }

@@ -3,15 +3,20 @@ package com.example.chatmessages.service.impl;
 import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.constant.ErrorCode;
 import com.example.chatmessages.dto.request.PrivateMessageRequest;
+import com.example.chatmessages.dto.response.ChatPartnerResponse;
 import com.example.chatmessages.dto.response.PrivateMessageResponse;
+import com.example.chatmessages.dto.response.RoomResponse;
 import com.example.chatmessages.dto.response.UserResponse;
 import com.example.chatmessages.entity.PrivateMessage;
+import com.example.chatmessages.entity.Room;
 import com.example.chatmessages.entity.User;
 import com.example.chatmessages.enums.SortType;
 import com.example.chatmessages.exception.NotFoundException;
 import com.example.chatmessages.mapper.PrivateMessageMapper;
+import com.example.chatmessages.mapper.RoomMapper;
 import com.example.chatmessages.mapper.UserMapper;
 import com.example.chatmessages.repository.PrivateMessageRepository;
+import com.example.chatmessages.repository.RoomMemberRepository;
 import com.example.chatmessages.repository.UserRepository;
 import com.example.chatmessages.service.PrivateMessageService;
 import com.example.chatmessages.utils.PageUtils;
@@ -35,6 +40,8 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
     PrivateMessageMapper privateMessageMapper;
     UserRepository userRepository;
     UserMapper userMapper;
+    RoomMemberRepository roomMemberRepository;
+    RoomMapper roomMapper;
 
     @Override
     public PrivateMessageResponse createPrivateMessage(PrivateMessageRequest privateMessageRequest) {
@@ -77,15 +84,16 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
     }
 
     @Override
-    public PageResponse<List<PrivateMessageResponse>> getMessagesBySenderAndReceiver(Integer senderId, Integer receiverId, int pageNo, int pageSize) {
+    public PageResponse<List<PrivateMessageResponse>> getMessagesBySenderAndReceiver(
+            Integer senderId, Integer receiverId, int pageNo, int pageSize
+    ) {
         Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "sentAt", Sort.Direction.ASC.name());
 
-        // Lấy tin nhắn từ sender đến receiver
-        Page<PrivateMessage> messagesFromSender = privateMessageRepository.findBySenderIdAndReceiverId(senderId, receiverId, pageable);
-        // Lấy tin nhắn từ receiver đến sender
-        Page<PrivateMessage> messagesFromReceiver = privateMessageRepository.findBySenderIdAndReceiverId(receiverId, senderId, pageable);
+        Page<PrivateMessage> messagesFromSender = privateMessageRepository
+                .findBySenderIdAndReceiverId(senderId, receiverId, pageable);
+        Page<PrivateMessage> messagesFromReceiver = privateMessageRepository
+                .findBySenderIdAndReceiverId(receiverId, senderId, pageable);
 
-        // Kết hợp các tin nhắn lại
         List<PrivateMessageResponse> combinedMessages = messagesFromSender.getContent().stream()
                 .map(privateMessageMapper::toResponseDTO)
                 .collect(Collectors.toList());
@@ -118,10 +126,15 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
     }
 
     @Override
-    public List<UserResponse> getChatPartners(Integer userId) {
+    public ChatPartnerResponse getChatPartnersAndRooms(Integer userId) {
+        List<Room> joinedRooms = roomMemberRepository.findRoomsByUserId(userId);
         List<User> chatPartners = privateMessageRepository.findChatPartnersByUserId(userId);
-        return chatPartners.stream()
+        List<RoomResponse> roomResponses = joinedRooms.stream()
+                .map(roomMapper::toResponseDTO)
+                .toList();
+        List<UserResponse> userResponses = chatPartners.stream()
                 .map(userMapper::toResponseDTO)
                 .toList();
+        return new ChatPartnerResponse(userResponses, roomResponses);
     }
 }

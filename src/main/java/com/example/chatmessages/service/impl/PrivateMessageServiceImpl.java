@@ -4,6 +4,7 @@ import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.constant.ErrorCode;
 import com.example.chatmessages.dto.request.PrivateMessageRequest;
 import com.example.chatmessages.dto.response.ChatPartnerResponse;
+import com.example.chatmessages.dto.response.MessageSenderAndReceiveResponse;
 import com.example.chatmessages.dto.response.PrivateMessageResponse;
 import com.example.chatmessages.dto.response.RoomResponse;
 import com.example.chatmessages.dto.response.UserResponse;
@@ -82,32 +83,23 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
                 .map(privateMessageMapper::toResponseDTO)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.PRIVATE_MESSAGE_NOT_FOUND.getMessage()));
     }
-
     @Override
-    public PageResponse<List<PrivateMessageResponse>> getMessagesBySenderAndReceiver(
-            Integer senderId, Integer receiverId, int pageNo, int pageSize
-    ) {
+    public PageResponse<List<MessageSenderAndReceiveResponse>> getMessagesBySenderAndReceiver(
+            Integer senderId, Integer receiverId, int pageNo, int pageSize) {
+
         Pageable pageable = PageUtils.createPageable(pageNo, pageSize, "sentAt", Sort.Direction.ASC.name());
 
-        Page<PrivateMessage> messagesFromSender = privateMessageRepository
-                .findBySenderIdAndReceiverId(senderId, receiverId, pageable);
-        Page<PrivateMessage> messagesFromReceiver = privateMessageRepository
-                .findBySenderIdAndReceiverId(receiverId, senderId, pageable);
+        Page<PrivateMessage> messages = privateMessageRepository.findMessagesBetween(senderId, receiverId, pageable);
 
-        List<PrivateMessageResponse> combinedMessages = messagesFromSender.getContent().stream()
-                .map(privateMessageMapper::toResponseDTO)
-                .collect(Collectors.toList());
+        List<MessageSenderAndReceiveResponse> messageResponses = messages.getContent().stream()
+                .map(privateMessageMapper::toSenderAndReceive)
+                .toList();
 
-        combinedMessages.addAll(messagesFromReceiver.getContent().stream()
-                .map(privateMessageMapper::toResponseDTO)
-                .toList());
-
-        return PageResponse.<List<PrivateMessageResponse>>builder()
+        return PageResponse.<List<MessageSenderAndReceiveResponse>>builder()
                 .page(pageNo)
                 .size(pageSize)
-                .totalPage((int) Math.ceil((double)
-                        (messagesFromSender.getTotalElements() + messagesFromReceiver.getTotalElements()) / pageSize))
-                .items(combinedMessages)
+                .totalPage(messages.getTotalPages())
+                .items(messageResponses)
                 .build();
     }
 
@@ -119,12 +111,10 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
             return privateMessageMapper.toResponseDTO(updatedMessage);
         }).orElseThrow(() -> new NotFoundException(ErrorCode.PRIVATE_MESSAGE_NOT_FOUND.getMessage()));
     }
-
     @Override
     public void deletePrivateMessage(Integer id) {
         privateMessageRepository.deleteById(id);
     }
-
     @Override
     public ChatPartnerResponse getChatPartnersAndRooms(Integer userId) {
         List<Room> joinedRooms = roomMemberRepository.findRoomsByUserId(userId);

@@ -4,8 +4,8 @@ import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.dto.ApiResponse;
 import com.example.chatmessages.dto.request.PrivateMessageRequest;
 import com.example.chatmessages.dto.response.ChatPartnerResponse;
+import com.example.chatmessages.dto.response.MessageSenderAndReceiveResponse;
 import com.example.chatmessages.dto.response.PrivateMessageResponse;
-import com.example.chatmessages.dto.response.UserResponse;
 import com.example.chatmessages.service.PrivateMessageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -44,18 +44,17 @@ public class PrivateMessageController {
     }
 
     @Operation(summary = "Get private messages between a specific sender and receiver with pagination")
-
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Messages retrieved successfully")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Messages not found between sender and receiver")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request parameters")
     @GetMapping("/between/{senderId}/{receiverId}")
-    public ApiResponse<PageResponse<List<PrivateMessageResponse>>> getMessagesBetween(
+    public ApiResponse<PageResponse<List<MessageSenderAndReceiveResponse>>> getMessagesBetween(
             @PathVariable Integer senderId,
             @PathVariable Integer receiverId,
             @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(value = "pageSize", defaultValue = "6") int pageSize) {
 
-        PageResponse<List<PrivateMessageResponse>> messages = privateMessageService.getMessagesBySenderAndReceiver(senderId, receiverId, pageNo, pageSize);
+        PageResponse<List<MessageSenderAndReceiveResponse>> messages = privateMessageService.getMessagesBySenderAndReceiver(senderId, receiverId, pageNo, pageSize);
         return new ApiResponse<>(HttpStatus.OK.value(), "Messages retrieved successfully", messages);
     }
 

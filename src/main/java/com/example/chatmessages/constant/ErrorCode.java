@@ -45,6 +45,7 @@ public enum ErrorCode {
     ROOM_WITH_THIS_NAME_ALREADY_EXISTS("Room with this name already exists", HttpStatus.BAD_REQUEST),
     //Room exit errors
     ROOM_EXIT_NOT_FOUND("RoomExit not found",HttpStatus.NOT_FOUND),
+    MESSAGE_NOT_FOUND("Message not found", HttpStatus.NOT_FOUND),
     //Sender errors
     SENDER_NOT_FOUND("Sender not found", HttpStatus.NOT_FOUND),
     RECEIVE_NOT_FOUND("Receive not found", HttpStatus.NOT_FOUND),

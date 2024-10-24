@@ -4,6 +4,7 @@ import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.dto.ApiResponse;
 import com.example.chatmessages.dto.request.PrivateMessageRequest;
 import com.example.chatmessages.dto.response.PrivateMessageResponse;
+import com.example.chatmessages.dto.response.UserResponse;
 import com.example.chatmessages.service.PrivateMessageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -67,5 +68,10 @@ public class PrivateMessageController {
     public ApiResponse<Void> deletePrivateMessage(@PathVariable Integer id) {
         privateMessageService.deletePrivateMessage(id);
         return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "Private message deleted successfully", null);
+    }
+    @GetMapping("/chat-partners/{userId}")
+    public ApiResponse<List<UserResponse>> getChatPartners(@PathVariable Integer userId) {
+        List<UserResponse> chatPartners = privateMessageService.getChatPartners(userId);
+        return new ApiResponse<>(HttpStatus.OK.value(), "Chat partners retrieved successfully", chatPartners);
     }
 }

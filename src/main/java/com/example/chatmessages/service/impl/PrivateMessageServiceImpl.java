@@ -4,16 +4,20 @@ import com.example.chatmessages.common.PageResponse;
 import com.example.chatmessages.constant.ErrorCode;
 import com.example.chatmessages.dto.request.PrivateMessageRequest;
 import com.example.chatmessages.dto.response.PrivateMessageResponse;
+import com.example.chatmessages.dto.response.UserResponse;
 import com.example.chatmessages.entity.PrivateMessage;
 import com.example.chatmessages.entity.User;
 import com.example.chatmessages.enums.SortType;
 import com.example.chatmessages.exception.NotFoundException;
 import com.example.chatmessages.mapper.PrivateMessageMapper;
+import com.example.chatmessages.mapper.UserMapper;
 import com.example.chatmessages.repository.PrivateMessageRepository;
 import com.example.chatmessages.repository.UserRepository;
 import com.example.chatmessages.service.PrivateMessageService;
 import com.example.chatmessages.utils.PageUtils;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,11 +28,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PrivateMessageServiceImpl implements PrivateMessageService {
 
-    private final PrivateMessageRepository privateMessageRepository;
-    private final PrivateMessageMapper privateMessageMapper;
-    private final UserRepository userRepository;
+    PrivateMessageRepository privateMessageRepository;
+    PrivateMessageMapper privateMessageMapper;
+    UserRepository userRepository;
+    UserMapper userMapper;
 
     @Override
     public PrivateMessageResponse createPrivateMessage(PrivateMessageRequest privateMessageRequest) {
@@ -53,7 +59,7 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
 
         List<PrivateMessageResponse> responseList = messagePage.getContent().stream()
                 .map(privateMessageMapper::toResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
 
         return PageResponse.<List<PrivateMessageResponse>>builder()
                 .page(messagePage.getNumber())
@@ -91,7 +97,8 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
         return PageResponse.<List<PrivateMessageResponse>>builder()
                 .page(pageNo)
                 .size(pageSize)
-                .totalPage((int) Math.ceil((double) (messagesFromSender.getTotalElements() + messagesFromReceiver.getTotalElements()) / pageSize))
+                .totalPage((int) Math.ceil((double)
+                        (messagesFromSender.getTotalElements() + messagesFromReceiver.getTotalElements()) / pageSize))
                 .items(combinedMessages)
                 .build();
     }
@@ -108,5 +115,13 @@ public class PrivateMessageServiceImpl implements PrivateMessageService {
     @Override
     public void deletePrivateMessage(Integer id) {
         privateMessageRepository.deleteById(id);
+    }
+
+    @Override
+    public List<UserResponse> getChatPartners(Integer userId) {
+        List<User> chatPartners = privateMessageRepository.findChatPartnersByUserId(userId);
+        return chatPartners.stream()
+                .map(userMapper::toResponseDTO)
+                .toList();
     }
 }

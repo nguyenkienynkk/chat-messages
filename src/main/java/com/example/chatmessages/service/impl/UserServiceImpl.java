@@ -39,7 +39,6 @@ public class UserServiceImpl implements UserService {
     public UserResponse createUser(UserRequest requestDTO) {
         if (userRepository.existsByEmailAndIdNot(requestDTO.getEmail(), null))
             throw new NotExistsException(ErrorCode.EMAIL_ALREADY_EXISTS.getMessage());
-
         User user = userMapper.toEntity(requestDTO);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user = userRepository.save(user);
@@ -71,9 +70,8 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND.getMessage()));
 
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()))
             throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
 
         return userMapper.toResponseDTO(user);
     }

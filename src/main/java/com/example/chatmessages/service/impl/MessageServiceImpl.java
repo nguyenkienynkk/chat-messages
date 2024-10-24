@@ -1,12 +1,14 @@
 package com.example.chatmessages.service.impl;
 
 import com.example.chatmessages.common.PageResponse;
+import com.example.chatmessages.constant.ErrorCode;
 import com.example.chatmessages.dto.request.MessageRequest;
 import com.example.chatmessages.dto.response.MessageResponse;
 import com.example.chatmessages.entity.Message;
 import com.example.chatmessages.entity.Room;
 import com.example.chatmessages.entity.User;
 import com.example.chatmessages.enums.SortType;
+import com.example.chatmessages.exception.NotFoundException;
 import com.example.chatmessages.mapper.MessageMapper;
 import com.example.chatmessages.repository.MessageRepository;
 import com.example.chatmessages.repository.RoomRepository;
@@ -14,7 +16,6 @@ import com.example.chatmessages.repository.UserRepository;
 import com.example.chatmessages.service.MessageService;
 import com.example.chatmessages.utils.PageUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,10 +35,10 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public MessageResponse createMessage(MessageRequest messageRequest) {
         Room room = roomRepository.findById(messageRequest.getRoomId())
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ROOM_NOT_FOUND.getMessage()));
 
         User sender = userRepository.findById(messageRequest.getSenderId())
-                .orElseThrow(() -> new RuntimeException("Sender not found"));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.SENDER_NOT_FOUND.getMessage()));
 
         Message message = messageMapper.toEntity(messageRequest);
 
@@ -77,7 +78,7 @@ public class MessageServiceImpl implements MessageService {
     public MessageResponse getMessageById(Integer id) {
         return messageRepository.findById(id)
                 .map(messageMapper::toResponseDTO)
-                .orElseThrow(() -> new RuntimeException("Message not found"));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.MESSAGE_NOT_FOUND.getMessage()));
     }
 
     @Override
@@ -87,7 +88,7 @@ public class MessageServiceImpl implements MessageService {
             message.setMessageType(messageRequest.getMessageType());
             message.setAttachment(messageRequest.getAttachment());
             return messageMapper.toResponseDTO(messageRepository.save(message));
-        }).orElseThrow(() -> new RuntimeException("Message not found"));
+        }).orElseThrow(() -> new NotFoundException(ErrorCode.MESSAGE_NOT_FOUND.getMessage()));
     }
 
     @Override
